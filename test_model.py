@@ -3,11 +3,9 @@ import shutil
 
 import PIL.Image
 import numpy as np
-
-from hailo_sdk_common.targets.inference_targets import SdkNative
 from hailo_sdk_client import ClientRunner
 from hailo_sdk_client.exposed_definitions import InferenceDataType
-
+from hailo_sdk_common.targets.inference_targets import SdkNative
 
 from tools import load_images, processing_images
 
@@ -17,10 +15,7 @@ def build_runner(model_filepath: pathlib.Path):
     return runner
 
 
-if __name__ == '__main__':
-    data_dirpath = pathlib.Path('edge/edge')
-    model_path = pathlib.Path('model_edge_224x224-aug-serco/model_edge_224x224-aug-serco_quantized.har')
-    output_dirpath = pathlib.Path('output')
+def main(data_dirpath, model_path, output_dirpath):
     if not output_dirpath.exists():
         output_dirpath.mkdir(parents=True)
 
@@ -43,3 +38,19 @@ if __name__ == '__main__':
         output_img.save(filepath)
 
     shutil.make_archive('output', 'zip', output_dirpath)
+
+
+if __name__ == '__main__':
+    import argparse
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--data_dir', '-d', type=str, help='dirpath to data with images')
+    parser.add_argument('--model_filepath', '-m', type=str, help='filepath to saved model in *.har format')
+    parser.add_argument('--output_dirpath', '-o', type=str, help='dirpath to output folder')
+    args = parser.parse_args()
+
+    data_dir = pathlib.Path(args.data_dir)
+    model_file = pathlib.Path(args.model_filepath)
+    output_dir = pathlib.Path(args.output_dirpath)
+
+    main(data_dir, model_file, output_dir)
